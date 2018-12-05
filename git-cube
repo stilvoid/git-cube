@@ -1,0 +1,39 @@
+#!/bin/bash
+
+set -e
+
+function git_cube_finish {
+    IFS=$'\n'
+    status=$(git status --porcelain -b 2>/dev/null || exit)  # Quit if this isn't a git repo
+
+    dirty=0
+
+    for line in $status; do
+        xy=$(echo $line | cut -d ' ' -f 1)
+
+        if [[ $xy == "##" ]]; then
+            if [[ $line =~ "]$" ]]; then
+                dirty=1
+                break
+            fi
+        elif [ $xy != "??" ]; then
+            dirty=1
+            break
+        fi
+    done
+
+    if [[ $dirty == 1 ]]; then
+        git status
+        echo "Please tidy up after yourself!"
+        echo
+        exec bash
+    fi
+}
+
+if [[ "$BASH_SOURCE" == "$0" ]]; then
+    # We're being run directly - this is a test
+    git_cube_finish
+else
+    # We're being sourced
+    trap git_cube_finish EXIT
+fi
