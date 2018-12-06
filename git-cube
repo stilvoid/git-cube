@@ -22,15 +22,16 @@ function git_cube_finish {
 
     if $dirty; then
         git status
+        echo
         echo "Please tidy up after yourself!"
         echo
-        exec bash
+        [ "$1" != "test" ] && exec bash
     fi
 }
 
 if [ "$BASH_SOURCE" = "$0" ]; then
     # We're being run directly - this is a test
-    git_cube_finish
+    git_cube_finish "test"
 else
     # We're being sourced
     trap git_cube_finish EXIT
