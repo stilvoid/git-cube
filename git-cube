@@ -1,7 +1,5 @@
 #!/bin/bash
 
-set -e
-
 function git_cube_finish {
     IFS=$'\n'
     status=$(git status --porcelain -b 2>/dev/null || exit)  # Quit if this isn't a git repo
