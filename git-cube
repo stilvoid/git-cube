@@ -4,23 +4,23 @@ function git_cube_finish {
     IFS=$'\n'
     status=$(git status --porcelain -b 2>/dev/null || exit)  # Quit if this isn't a git repo
 
-    dirty=0
+    dirty=false
 
     for line in $status; do
         xy=$(echo $line | cut -d ' ' -f 1)
 
-        if [[ $xy == "##" ]]; then
-            if [[ $line =~ "]$" ]]; then
-                dirty=1
+        if [ "$xy" = "##" ]; then
+            if [ -z "${line##*]}" ]; then
+                dirty=true
                 break
             fi
-        elif [ $xy != "??" ]; then
-            dirty=1
+        elif [ "$xy" != "??" ]; then
+            dirty=true
             break
         fi
     done
 
-    if [[ $dirty == 1 ]]; then
+    if $dirty; then
         git status
         echo "Please tidy up after yourself!"
         echo
@@ -28,7 +28,7 @@ function git_cube_finish {
     fi
 }
 
-if [[ "$BASH_SOURCE" == "$0" ]]; then
+if [ "$BASH_SOURCE" = "$0" ]; then
     # We're being run directly - this is a test
     git_cube_finish
 else
