@@ -25,7 +25,10 @@ function git_cube_finish {
         echo
         echo "Please tidy up after yourself!"
         echo
-        [ "$1" != "test" ] && exec bash
+
+        if [ "$1" != "test" ]; then
+            GIT_CUBE=1 exec bash
+        fi
     fi
 }
 
@@ -34,5 +37,7 @@ if [ "$BASH_SOURCE" = "$0" ]; then
     git_cube_finish "test"
 else
     # We're being sourced
-    trap git_cube_finish EXIT
+    if [ ${GIT_CUBE-0} -ne 1 ]; then
+        trap git_cube_finish EXIT
+    fi
 fi
